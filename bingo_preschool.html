@@ -150,6 +150,13 @@ const TOPIC_LABELS={
  enUpper:'รายการภาษาอังกฤษ (ตัวใหญ่)',
  custom:'รายการ Custom'
 };
+const TOPIC_TITLES={
+ math:'คณิตศาสตร์',
+ thai:'ภาษาไทย',
+ enLower:'ภาษาอังกฤษ (ตัวเล็ก)',
+ enUpper:'ภาษาอังกฤษ (ตัวใหญ่)',
+ custom:''
+};
 const $=id=>document.getElementById(id);
 let cards=[SAMPLE.map((v,i)=>({v:String(v),c:SAMPLE_C[i]}))];
 
@@ -275,11 +282,18 @@ function render(){
  setTitle();cards.forEach((_,ci)=>markDups(ci));
 }
 function fitTitle(){document.querySelectorAll('.ttl').forEach(e=>{
- const w=e.parentElement.clientWidth;let s=w*0.085;e.style.fontSize=s+'px';
- while(e.scrollWidth>e.clientWidth&&s>8){s-=1;e.style.fontSize=s+'px'}})}
-function setTitle(){document.querySelectorAll('.ttl').forEach(e=>e.textContent=$('title').value||'บิงโก');fitTitle()}
+ let s=8.5;
+ e.style.fontSize=s+'cqw';
+ while(e.scrollWidth>e.clientWidth&&s>1){s-=0.1;e.style.fontSize=s.toFixed(1)+'cqw'}
+ })}
+function setTitle(){document.querySelectorAll('.ttl').forEach(e=>e.textContent=$('title').value);fitTitle()}
+function syncTitleToTopic(){
+ const topic=$('topic').value;
+ $('title').value=TOPIC_TITLES[topic]??'';
+ setTitle();
+}
 $('title').addEventListener('input',setTitle);
-$('topic').addEventListener('change',()=>{updateTopicUI();gen()});
+$('topic').addEventListener('change',()=>{syncTitleToTopic();updateTopicUI();gen()});
 $('listData').addEventListener('input',()=>{
  if(listTopic()){TOPIC_DEFAULTS[$('topic').value]=$('listData').value;updateListCount();}
 });
@@ -288,6 +302,7 @@ $('gen').onclick=gen;$('clear').onclick=clearAll;$('print').onclick=()=>window.p
 window.addEventListener('resize',fitTitle);
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitTitle);
 updateTopicUI();
+syncTitleToTopic();
 render();
 
 /* ---------- ดาวน์โหลดเป็นรูปภาพ ---------- */
@@ -336,8 +351,8 @@ async function renderCardCanvas(card,title,n){
  if(document.fonts&&document.fonts.load){try{await document.fonts.load('600 100px Fredoka')}catch(e){}}
  // title
  const tx=TITLEBOX.x*CW,ty=TITLEBOX.y*CH,tw=TITLEBOX.w*CW,th=TITLEBOX.h*CH;
- let fs=CW*.078;ctx.font='600 '+fs+'px Fredoka, Kanit, sans-serif';
- while(ctx.measureText(title).width>tw*.94&&fs>10){fs-=2;ctx.font='600 '+fs+'px Fredoka, Kanit, sans-serif'}
+ let fs=CW*.085;const step=CW*.001;ctx.font='600 '+fs+'px Fredoka, Kanit, sans-serif';
+ while(ctx.measureText(title).width>tw&&fs>CW*.01){fs-=step;ctx.font='600 '+fs+'px Fredoka, Kanit, sans-serif'}
  const tcx=tx+tw/2,tcy=ty+th/2,tso=CH*.006;
  ctx.textAlign='center';ctx.textBaseline='middle';
  ctx.fillStyle='rgba(0,30,20,.4)';ctx.fillText(title,tcx,tcy+tso);
