@@ -153,7 +153,8 @@ Repository นี้ประกอบด้วยไฟล์หลักสำ
 
 ```text
 preschool-bingo-maker/
-└── index.html
+├── index.html
+└── sitemap.xml
 ```
 
 ---
